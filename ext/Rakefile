@@ -27,7 +27,7 @@ end
 def install_manpages(dest)
   begin
     FileUtils.chdir(PROJECT_ROOT)
-    Dir.glob(File.join('share', 'man', '**', '*').each do |file|
+    Dir.glob(File.join('share', 'man', '**', '*')).each do |file|
       dest_file = File.join(dest, file)
       FileUtils.mkdir_p(File.dirname(file))
       FileUtils.rm(dest_file) if File.symlink?(dest_file) and not File.exists?(dest_file)
