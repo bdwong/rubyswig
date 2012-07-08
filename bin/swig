@@ -1,0 +1,2 @@
+#!/bin/sh
+# Wrapper to run the real swig
