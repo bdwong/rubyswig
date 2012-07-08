@@ -1,13 +1,15 @@
 require 'fileutils'
 require 'parallel'
 
-puts "extconf.rb is being processed."
+puts "Rakefile is being processed."
 
 SWIG_VERSION='2.0.7'
 PCRE_VERSION='8.30'
 PROJECT_ROOT=File.expand_path(File.join(File.dirname(__FILE__), '..'))
 EXT_ROOT=File.expand_path(File.dirname(__FILE__))
 PWD=FileUtils.pwd
+
+task :default => [:build_swig]
 
 # Detect existing pcre library.
 def pcre_installed?
@@ -62,8 +64,10 @@ def install_swig
   system 'make install'
 end
 
-build_swig
-install_swig
-install_manpages('/usr/local')
+task :build_swig do
+  build_swig
+  install_swig
+  install_manpages('/usr/local')
+  FileUtils.chdir(PWD)
+end
 
-FileUtils.chdir(PWD)

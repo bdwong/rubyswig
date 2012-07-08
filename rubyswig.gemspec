@@ -12,7 +12,7 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{Build and install SWIG from source for Ruby}
   gem.homepage      = ""
 
-  gem.extensions    << "ext/extconf.rb"
+  gem.extensions    << "ext/Rakefile"
   gem.files         = `git ls-files`.split($\)
   #gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.executables   = ["swig"]
