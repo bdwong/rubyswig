@@ -9,19 +9,29 @@ PROJECT_ROOT=File.expand_path(File.join(File.dirname(__FILE__), '..'))
 EXT_ROOT=File.expand_path(File.dirname(__FILE__))
 PWD=FileUtils.pwd
 
+module Kernel
+  def system!(*args)
+    system(*args)
+    return_code=$?
+    if return_code != 0 then
+      raise RuntimeError.new("Failed to run #{args}. Return code: #{return_code}")
+    end
+  end
+end
+
 task :default => [:build_swig]
 
 # Detect existing pcre library.
 def pcre_installed?
-  system "gcc -c #{EXT_ROOT}/findpcre.c -o /dev/null"
+  system! "gcc -c #{EXT_ROOT}/findpcre.c -o /dev/null"
   $? == 0
 end
 
 # Download and build local version of pcre.
 def install_pcre
-  FileUtils.chdir(EXT_ROOT)
-  system "wget http://sourceforge.net/projects/pcre/files/pcre/#{PCRE_VERSION}/pcre-#{PCRE_VERSION}.tar.gz"
-  system 'Tools/pcre-build.sh'
+  FileUtils.chdir(File.join(EXT_ROOT, "swig-#{SWIG_VERSION}"))
+  system! "wget http://sourceforge.net/projects/pcre/files/pcre/#{PCRE_VERSION}/pcre-#{PCRE_VERSION}.tar.gz"
+  system! 'Tools/pcre-build.sh'
 end
 
 def install_manpages(dest)
@@ -39,8 +49,8 @@ end
 
 def build_swig
   FileUtils.chdir(EXT_ROOT)
-  system "wget http://prdownloads.sourceforge.net/swig/swig-#{SWIG_VERSION}.tar.gz"
-  system "tar -zxsf swig-#{SWIG_VERSION}.tar.gz"
+  system! "wget http://prdownloads.sourceforge.net/swig/swig-#{SWIG_VERSION}.tar.gz"
+  system! "tar -zxsf swig-#{SWIG_VERSION}.tar.gz"
   FileUtils.chdir("swig-#{SWIG_VERSION}")
 
   # Requirement: pcre.
@@ -50,18 +60,18 @@ def build_swig
 
   # By using $PROJECT_ROOT, swig will be installed into the bin folder.
   # This is 
-  system "./configure --prefix=#{PROJECT_ROOT}"
+  system! "./configure --prefix=#{PROJECT_ROOT}"
 
   processors = Parallel.processor_count
   if processors > 1
-    system "make -j#{processors}"
+    system! "make -j#{processors}"
   else
-    system 'make'
+    system! 'make'
   end
 end
 
 def install_swig
-  system 'make install'
+  system! 'make install'
 end
 
 task :build_swig do

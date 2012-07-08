@@ -1,2 +1,3 @@
 #!/bin/sh
-# Wrapper to run the real swig
+# Placeholder file
+echo rubyswig was not installed properly. Please check your configuration and try again.
