@@ -1,0 +1,42 @@
+#!/bin/bash
+pushd `dirname $0/..`
+PROJECT_ROOT=$PWD
+
+wget http://prdownloads.sourceforge.net/swig/swig-2.0.7.tar.gz
+tar -zxsf swig-2.0.7.tar.gz
+cd swig-2.0.7
+
+# Requirement: pcre.
+# Detect existing pcre library.
+gcc -c findpcre.c -o /dev/null
+if ! $?; then
+	# Download and build local version of pcre.
+	wget http://sourceforge.net/projects/pcre/files/pcre/8.30/pcre-8.30.tar.gz
+	Tools/pcre-build.sh
+fi
+
+# This works for both rvm and non-rvm installations (as opposed to $GEM_PATH)
+GEMDIR=`gem env gemdir`
+# When running from extconf.rb, use $PROJECT_ROOT. Then swig will be in the bin folder.
+./configure --prefix=$PROJECT_ROOT
+#./configure --prefix=$GEMDIR
+processor_count=`ruby -r 'parallel' -e 'puts Parallel.processor_count'`
+make -j${processor_count:-1}
+make install
+
+# This is optional.
+# Add share/man page for ccache-swig
+sudo mkdir -p /usr/local/share/man/man1
+# ln -s $GEMDIR/share/man/man1/ccache-swig.1 /usr/local/share/man/man1/
+for manpage in $GEMDIR/share/man/man1/*; do
+	page=`basename $manpage`
+	if ! [ -f /usr/local/share/man/man1/$page ]; then
+		if [ -h /usr/local/share/man/man1/$page ]; then
+			# Remove stale link
+			sudo rm /usr/local/share/man/man1/$page
+		fi
+	sudo ln -s $manpage /usr/local/share/man/man1/$page
+	fi
+done
+
+popd
