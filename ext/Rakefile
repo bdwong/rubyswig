@@ -23,14 +23,16 @@ task :default => [:build_swig]
 
 # Detect existing pcre library.
 def pcre_installed?
-  system! "gcc -c #{EXT_ROOT}/findpcre.c -o /dev/null"
+  system "gcc -c #{EXT_ROOT}/findpcre.c -o /dev/null"
   $? == 0
 end
 
 # Download and build local version of pcre.
 def install_pcre
   FileUtils.chdir(File.join(EXT_ROOT, "swig-#{SWIG_VERSION}"))
-  system! "wget http://sourceforge.net/projects/pcre/files/pcre/#{PCRE_VERSION}/pcre-#{PCRE_VERSION}.tar.gz"
+  if not File.exists?("pcre-#{PCRE_VERSION}.tar.gz") then
+    system! "wget http://sourceforge.net/projects/pcre/files/pcre/#{PCRE_VERSION}/pcre-#{PCRE_VERSION}.tar.gz"
+  end
   system! 'Tools/pcre-build.sh'
 end
 
@@ -49,7 +51,9 @@ end
 
 def build_swig
   FileUtils.chdir(EXT_ROOT)
-  system! "wget http://prdownloads.sourceforge.net/swig/swig-#{SWIG_VERSION}.tar.gz"
+  if not File.exists?("swig-#{SWIG_VERSION}.tar.gz") then
+    system! "wget http://prdownloads.sourceforge.net/swig/swig-#{SWIG_VERSION}.tar.gz"
+  end
   system! "tar -zxsf swig-#{SWIG_VERSION}.tar.gz"
   FileUtils.chdir("swig-#{SWIG_VERSION}")
 
@@ -59,7 +63,8 @@ def build_swig
   end
 
   # By using $PROJECT_ROOT, swig will be installed into the bin folder.
-  # This is 
+  # This is so the executables can be specified in the gemspec.
+  # TODO: clean clean previous configures
   system! "./configure --prefix=#{PROJECT_ROOT}"
 
   processors = Parallel.processor_count
