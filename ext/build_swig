@@ -18,8 +18,7 @@ fi
 # This works for both rvm and non-rvm installations (as opposed to $GEM_PATH)
 GEMDIR=`gem env gemdir`
 # When running from extconf.rb, use $PROJECT_ROOT. Then swig will be in the bin folder.
-./configure --prefix=$PROJECT_ROOT
-#./configure --prefix=$GEMDIR
+./configure --prefix=$GEMDIR
 processor_count=`ruby -r 'parallel' -e 'puts Parallel.processor_count'`
 make -j${processor_count:-1}
 make install
