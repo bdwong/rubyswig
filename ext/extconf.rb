@@ -1,6 +1,8 @@
 require 'fileutils'
 require 'parallel'
 
+puts "extconf.rb is being processed."
+
 SWIG_VERSION='2.0.7'
 PCRE_VERSION='8.30'
 PROJECT_ROOT=File.expand_path(File.join(File.dirname(__FILE__), '..'))

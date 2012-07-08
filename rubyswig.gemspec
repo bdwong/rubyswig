@@ -4,7 +4,7 @@ require File.expand_path('../lib/rubyswig/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Brian Wong"]
   gem.email         = ["bdwong.net@gmail.com"]
-  gem.description   = %q{Build SWIG (Simplified Wrapper Interface Generator) from source with minimal dependencies,
+  gem.description   = %q{Builds SWIG (Simplified Wrapper Interface Generator) from source with minimal dependencies,
                          then installs it as a rubygem executable, allowing it to be versioned with rvm gemsets.
                          More importantly, makes installing SWIG dead-easy, and allows you to use Gemfiles and
                          Bundler to specify dependencies against it.
@@ -12,14 +12,14 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{Build and install SWIG from source for Ruby}
   gem.homepage      = ""
 
+  gem.extensions    << "ext/extconf.rb"
   gem.files         = `git ls-files`.split($\)
-  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
+  #gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
+  gem.executables   = ["swig"]
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.name          = "rubyswig"
   gem.require_paths = ["lib"]
   gem.version       = Rubyswig::VERSION
   gem.bindir        = "bin"
-  gem.extensions    = "ext/extconf.rb"
-  gem.executables   = "swig"
-  gem.add_dependency= "parallel"
+  gem.add_dependency "parallel"
 end
