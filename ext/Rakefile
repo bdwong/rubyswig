@@ -51,8 +51,10 @@ def install_manpages(dest)
       FileUtils.rm(dest_file) if File.symlink?(dest_file) and not File.exists?(dest_file)
       FileUtils.ln_s(File.expand_path(file), dest_file)
     end
+  rescue Errno::EACCES
+    puts "Warning: man pages are not installed. To install locally:"
+    puts "cd #{PROJECT_ROOT}; sudo rake install_manpages"
   rescue => e
-  #rescue permissions error
     puts "Rescuing #{e.class}"
     puts e.inspect
     raise
@@ -98,5 +100,9 @@ task :build_swig do
   install_swig
   install_manpages('/usr/local')
   FileUtils.chdir(PWD)
+end
+
+task :install_manpages do
+  install_manpages('/usr/local')
 end
 
