@@ -8,6 +8,8 @@ PCRE_VERSION='8.30'
 PROJECT_ROOT=File.expand_path(File.join(File.dirname(__FILE__), '..'))
 EXT_ROOT=File.expand_path(File.dirname(__FILE__))
 PWD=FileUtils.pwd
+GEMDIR=`gem env gemdir`.chomp
+GEM_CACHE_DIR=File.join(GEMDIR, 'cache')
 
 module Kernel
   def system!(*args)
@@ -29,10 +31,14 @@ end
 
 # Download and build local version of pcre.
 def install_pcre
+  pcre_filename="pcre-#{PCRE_VERSION}.tar.gz"
+  pcre_download_path=File.join(GEM_CACHE_DIR, pcre_filename)
+
   FileUtils.chdir(File.join(EXT_ROOT, "swig-#{SWIG_VERSION}"))
-  if not File.exists?("pcre-#{PCRE_VERSION}.tar.gz") then
-    system! "wget http://sourceforge.net/projects/pcre/files/pcre/#{PCRE_VERSION}/pcre-#{PCRE_VERSION}.tar.gz"
+  if not File.exists?(pcre_download_path) then
+    system! "wget -P #{GEM_CACHE_DIR} http://sourceforge.net/projects/pcre/files/pcre/#{PCRE_VERSION}/#{pcre_filename}"
   end
+  FileUtils.ln_s(pcre_download_path, pcre_filename)
   system! 'Tools/pcre-build.sh'
 end
 
@@ -45,15 +51,23 @@ def install_manpages(dest)
       FileUtils.rm(dest_file) if File.symlink?(dest_file) and not File.exists?(dest_file)
       FileUtils.ln_s(File.expand_path(file), dest_file)
     end
+  rescue => e
   #rescue permissions error
+    puts "Rescuing #{e.class}"
+    puts e.inspect
+    raise
   end
 end
 
 def build_swig
+  swig_filename="swig-#{SWIG_VERSION}.tar.gz"
+  swig_download_path=File.join(GEM_CACHE_DIR, swig_filename)
+
   FileUtils.chdir(EXT_ROOT)
-  if not File.exists?("swig-#{SWIG_VERSION}.tar.gz") then
-    system! "wget http://prdownloads.sourceforge.net/swig/swig-#{SWIG_VERSION}.tar.gz"
+  if not File.exists?(swig_download_path) then
+    system! "wget -P #{GEM_CACHE_DIR} http://downloads.sourceforge.net/project/swig/swig/swig-#{SWIG_VERSION}/#{swig_filename}"
   end
+  FileUtils.ln_s(swig_download_path, swig_filename)
   system! "tar -zxsf swig-#{SWIG_VERSION}.tar.gz"
   FileUtils.chdir("swig-#{SWIG_VERSION}")
 
