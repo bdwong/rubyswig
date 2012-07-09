@@ -35,3 +35,7 @@ If you have gems that need to create SWIG wrappers, you can add rubyswig as a de
 3. Commit your changes (`git commit -am 'Added some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## Additional Credits
+
+Jon Maken for download.rb (https://gist.github.com/2202048)
