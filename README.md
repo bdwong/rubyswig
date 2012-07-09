@@ -6,6 +6,8 @@ then installs it as a rubygem executable, allowing it to be versioned with rvm g
 More importantly, makes installing SWIG dead-easy, and allows you to use Gemfiles and
 Bundler to specify dependencies against it.
 
+Currently tested on Ubuntu 12.04.
+
 ## Installation
 
 Add this line to your application's Gemfile:
