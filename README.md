@@ -1,12 +1,12 @@
 # Rubyswig
 
-Build SWIG (Simplified Wrapper Interface Generator) from source with minimal dependencies,
+Builds SWIG (Simplified Wrapper Interface Generator) from source with minimal dependencies,
 then installs it as a rubygem executable, allowing it to be versioned with rvm gemsets.
 
 More importantly, makes installing SWIG dead-easy, and allows you to use Gemfiles and
 Bundler to specify dependencies against it.
 
-Currently tested on Ubuntu 12.04.
+Tested on Ubuntu 12.04 and OSX Snow Leopard (10.6).
 
 ## Installation
 
