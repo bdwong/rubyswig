@@ -6,6 +6,7 @@ puts "Rakefile is being processed."
 SWIG_VERSION='2.0.7'
 PCRE_VERSION='8.30'
 PROJECT_ROOT=File.expand_path(File.join(File.dirname(__FILE__), '..'))
+INSTALL_DIR=File.join(PROJECT_ROOT, "swig")
 EXT_ROOT=File.expand_path(File.dirname(__FILE__))
 PWD=FileUtils.pwd
 GEMDIR=`gem env gemdir`.chomp
@@ -78,10 +79,8 @@ def build_swig
     install_pcre
   end
 
-  # By using $PROJECT_ROOT, swig will be installed into the bin folder.
-  # This is so the executables can be specified in the gemspec.
   # TODO: clean clean previous configures
-  system! "./configure --prefix=#{PROJECT_ROOT}"
+  system! "./configure --prefix=#{INSTALL_DIR}"
 
   processors = Parallel.processor_count
   if processors > 1
