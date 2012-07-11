@@ -1,6 +1,6 @@
 require 'fileutils'
 require 'parallel'
-require 'net/http'
+require 'rbconfig'
 require File.expand_path(File.join(File.dirname(__FILE__), 'download'))
 
 module RubySwig
@@ -13,6 +13,8 @@ module RubySwig
   PWD=FileUtils.pwd
   GEMDIR=`gem env gemdir`.chomp
   GEM_CACHE_DIR=File.join(GEMDIR, 'cache')
+  IS_WINDOWS = (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
+  # Windows VC++: download http://prdownloads.sourceforge.net/swig/swigwin-2.0.7.zip
 
   class SwigBuilder
     def system!(*args)
@@ -20,6 +22,30 @@ module RubySwig
       return_code=$?
       if return_code != 0 then
         raise RuntimeError.new("Failed to run #{args}. Return code: #{return_code}")
+      end
+    end
+
+    def link(src, dest, options={})
+      if IS_WINDOWS
+        begin
+          FileUtils.cp(src, dest)
+        rescue Errno::EEXIST
+          puts "File #{src} already exists, skipping file copy"
+        end
+      else
+        begin
+          FileUtils.ln_s(src, dest, options)
+        rescue Errno::EEXIST
+          puts "File #{src} already exists, skipping symlink"
+        end
+      end
+    end
+
+    def run_script!(command)
+      if IS_WINDOWS
+        system "bash #{command}"
+      else
+        system! command
       end
     end
 
@@ -41,12 +67,8 @@ module RubySwig
         # system! "curl -L -o #{pcre_download_path} #{pcre_url}"
         # system! "wget -P #{GEM_CACHE_DIR} #{pcre_url}"
       end
-      begin
-        FileUtils.ln_s(pcre_download_path, pcre_filename)
-      rescue Errno::EEXIST
-        puts "File #{pcre_filename} already exists, skipping symlink"
-      end
-      system! 'Tools/pcre-build.sh'
+      link(pcre_download_path, pcre_filename)
+      run_script! 'Tools/pcre-build.sh'
     end
 
     def install_manpages(dest)
@@ -55,8 +77,7 @@ module RubySwig
         Dir.glob(File.join('share', 'man', '**', '*')).each do |file|
           dest_file = File.join(dest, file)
           FileUtils.mkdir_p(File.dirname(file))
-          FileUtils.rm(dest_file) if File.symlink?(dest_file) and not File.exists?(dest_file)
-          FileUtils.ln_s(File.expand_path(file), dest_file)
+          link(File.expand_path(file), dest_file, :force => true)
         end
       rescue Errno::EACCES
         puts "Warning: man pages are not installed. To install locally:"
@@ -83,11 +104,7 @@ module RubySwig
         # system! "curl -L -o #{swig_download_path} #{swig_url}"
         # system! "wget -P #{GEM_CACHE_DIR} #{swig_url}"
       end
-      begin
-        FileUtils.ln_s(swig_download_path, swig_filename)
-      rescue Errno::EEXIST
-        puts "File #{swig_filename} already exists, skipping symlink"
-      end
+      link(swig_download_path, swig_filename)
       system! "tar -zxsf swig-#{SWIG_VERSION}.tar.gz"
       FileUtils.chdir(SOURCE_DIR)
 
@@ -97,7 +114,7 @@ module RubySwig
       end
 
       system! "make distclean" if File.exists?('Makefile')
-      system! "./configure --prefix=#{INSTALL_DIR}"
+      run_script! "./configure --prefix=#{INSTALL_DIR}"
 
       processors = Parallel.processor_count
       if processors > 1
