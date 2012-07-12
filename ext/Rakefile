@@ -68,7 +68,12 @@ module RubySwig
         # system! "wget -P #{GEM_CACHE_DIR} #{pcre_url}"
       end
       link(pcre_download_path, pcre_filename)
-      run_script! 'Tools/pcre-build.sh'
+      if IS_WINDOWS
+        FileUtils.cp(File.join(EXT_ROOT, 'devkit-pcre-build.sh'), '.')
+        run_script! 'devkit-pcre-build.sh'
+      else
+        run_script! 'Tools/pcre-build.sh'
+      end
     end
 
     def install_manpages(dest)
