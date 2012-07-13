@@ -17,6 +17,18 @@ module RubySwig
   # Windows VC++: download http://prdownloads.sourceforge.net/swig/swigwin-2.0.7.zip
 
   class SwigBuilder
+    def initialize
+      if `bash -c "which bsdtar"`.empty?
+        @tar_cmd='tar'
+      else
+        @tar_cmd='bsdtar'
+      end
+    end
+
+    def bsd_tar?
+      @tar_cmd=='bsdtar'
+    end
+
     def system!(*args)
       system(*args)
       return_code=$?
@@ -43,7 +55,7 @@ module RubySwig
 
     def run_script!(command)
       if IS_WINDOWS
-        system "bash #{command}"
+        system "bash -c '#{command}'"
       else
         system! command
       end
@@ -68,9 +80,9 @@ module RubySwig
         # system! "wget -P #{GEM_CACHE_DIR} #{pcre_url}"
       end
       link(pcre_download_path, pcre_filename)
-      if IS_WINDOWS
-        FileUtils.cp(File.join(EXT_ROOT, 'devkit-pcre-build.sh'), '.')
-        run_script! 'devkit-pcre-build.sh'
+      if bsd_tar?
+        FileUtils.cp(File.join(EXT_ROOT, 'bsdtar-pcre-build.sh'), '.')
+        run_script! './bsdtar-pcre-build.sh'
       else
         run_script! 'Tools/pcre-build.sh'
       end
@@ -110,7 +122,7 @@ module RubySwig
         # system! "wget -P #{GEM_CACHE_DIR} #{swig_url}"
       end
       link(swig_download_path, swig_filename)
-      system! "tar -zxsf swig-#{SWIG_VERSION}.tar.gz"
+      system! "#{@tar_cmd} -xf swig-#{SWIG_VERSION}.tar.gz"
       FileUtils.chdir(SOURCE_DIR)
 
       # Requirement: pcre.
