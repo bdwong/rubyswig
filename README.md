@@ -1,12 +1,22 @@
 # Rubyswig
 
-Builds SWIG (Simplified Wrapper Interface Generator) from source with minimal dependencies,
+Builds [SWIG](http://www.swig.org) (Simplified Wrapper Interface Generator) from source with minimal dependencies,
 then installs it as a rubygem executable, allowing it to be versioned with rvm gemsets.
 
 More importantly, makes installing SWIG dead-easy, and allows you to use Gemfiles and
 Bundler to specify dependencies against it.
 
-Tested on Ubuntu 12.04, OSX Snow Leopard (10.6), and Windows 7 (x86-64) with Devkit.
+Tested with Ruby 1.9.3 on Ubuntu 12.04, OSX Snow Leopard (10.6), and Windows 7 (x86-64) with [Devkit](http://rubyinstaller.org/add-ons/devkit/).
+
+## Prerequisites
+
+### All
+
+Ruby and an environment that can build native gems.
+
+### Windows
+
+If you're starting your Ruby environment from scratch, I recommend the [RailsInstaller](http://railsinstaller.org/), which includes Devkit. You can also install Devkit [manually](https://github.com/oneclick/rubyinstaller/wiki/Development-Kit), but there are more steps involved.
 
 ## Installation
 
@@ -24,7 +34,7 @@ Or install it yourself as:
 
 ## Usage
 
-Once SWIG is installed, use it as normal. See http://www.swig.org.
+Once SWIG is installed, use it as normal. See <http://www.swig.org>. Remember that if you use rvm gemsets that the executable is tied to the gemset in which you installed it.
 
 If you have gems that need to create SWIG wrappers, you can add rubyswig as a dependency of your gem.
 
