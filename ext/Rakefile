@@ -6,6 +6,16 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'download'))
 module RubySwig
   SWIG_VERSION='2.0.7'
   PCRE_VERSION='8.30'
+  IS_WINDOWS = (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
+  if (IS_WINDOWS)
+    begin
+      # Setup devkit path so we have access to bash and tar.
+      require 'devkit'
+    rescue LoadError
+      puts "Devkit is required on Windows to build SWIG from source."
+    end
+  end
+
   PROJECT_ROOT=File.expand_path(File.join(File.dirname(__FILE__), '..'))
   EXT_ROOT=File.expand_path(File.dirname(__FILE__))
   SOURCE_DIR=File.join(EXT_ROOT, "swig-#{SWIG_VERSION}")
@@ -13,7 +23,6 @@ module RubySwig
   PWD=FileUtils.pwd
   GEMDIR=`gem env gemdir`.chomp
   GEM_CACHE_DIR=File.join(GEMDIR, 'cache')
-  IS_WINDOWS = (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
   # Windows VC++: download http://prdownloads.sourceforge.net/swig/swigwin-2.0.7.zip
 
   class SwigBuilder
