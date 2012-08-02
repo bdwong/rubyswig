@@ -1,5 +1,5 @@
-#!/bin/sh
+#!/usr/bin/env ruby
 # Wrapper to call the binary executable.
 PROJECT_ROOT=File.expand_path(File.join(File.dirname(__FILE__), '..'))
 executable_path=File.join(PROJECT_ROOT, "swig", "bin", "swig")
-system "#{executable_path} #{ARGV.join}"
+system "#{executable_path}", *ARGV
