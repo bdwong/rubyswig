@@ -2,4 +2,4 @@
 # Wrapper to call the binary executable.
 PROJECT_ROOT=File.expand_path(File.join(File.dirname(__FILE__), '..'))
 executable_path=File.join(PROJECT_ROOT, "swig", "bin", "ccache-swig")
-system "#{executable_path}", *ARGV
+exec "#{executable_path}", *ARGV
