@@ -38,6 +38,33 @@ Once SWIG is installed, use it as normal. See <http://www.swig.org>. Remember th
 
 If you have gems that need to create SWIG wrappers, you can add rubyswig as a dependency of your gem.
 
+## Makefiles and extconf.rb
+
+You can include swig in your extconf.rb to automatically generate and compile wrappers from the .i interface file. Example:
+
+```ruby
+require 'mkmf'
+
+dir_config('ois', '/usr/include/OIS', '/usr/lib')
+
+# Identify SWIG interface files as source files
+SRC_EXT.concat %w[i]
+
+# make dependency file for SWIG wrappers
+open("depend", "w") do |f|
+  f.puts("SWIG = #{find_executable('swig')}")
+  f.puts("SWIGFLAGS = -D__GNUC__=4 -D__GNUC_MINOR__=6 -D__GNUC_PATCHLEVEL__=3 -ruby -Wall -c++ -minherit")
+  f.puts(".i.cxx:")
+  f.puts("\t$(ECHO) wrapping $(<)")
+  f.puts("\t$(SWIG) $(SWIGFLAGS) $(INCFLAGS) $(CPPFLAGS) -o $@ $(<)")
+
+have_library('OIS')
+
+create_makefile('ois')
+```
+
+Note that SWIG does not define the same symbols as, say, GCC, so you need to define them yourself for platform-specific compilation.
+
 ## Contributing
 
 1. Fork it
