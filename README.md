@@ -49,3 +49,7 @@ If you have gems that need to create SWIG wrappers, you can add rubyswig as a de
 ## Additional Credits
 
 Jon Maken for download.rb (https://gist.github.com/2202048)
+
+## Alternatives
+
+[Rice](http://rice.rubyforge.org/) is a C++ wrapper interface to the Ruby API. It's easier to use but is specific to Ruby. 
